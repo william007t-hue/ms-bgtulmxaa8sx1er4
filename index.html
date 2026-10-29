@@ -73,6 +73,7 @@ select{width:100%;padding:14px;border-radius:12px;background:var(--card2);color:
 .tgl{display:flex;align-items:center;gap:10px;min-height:48px;font-size:15px}.tgl input{width:24px;height:24px}
 .row2 input{width:100%;margin-top:4px;padding:14px;border-radius:12px;background:var(--card2);color:var(--txt);border:1px solid var(--line);font-size:16px;box-sizing:border-box}
 .mini.sel i.S{background:var(--green)}.mini.sel i.O{background:#2f4553}
+.t10{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;margin-top:8px}.t10 figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;background:#1a2c38;border-radius:8px;padding:6px 4px}.t10 figcaption{font-size:12px;text-align:center;line-height:1.25}.t10 .rk{font-size:11px;color:var(--mut,#9fb0bd)}
 .srow .item{cursor:pointer}.sdet{padding:0 2px}
 .ttab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.ttab th,.ttab td{border-bottom:1px solid var(--line);padding:6px 3px;text-align:center}.ttab th{color:var(--mut);font-weight:600}
 .prog{height:10px;background:var(--card2);border-radius:5px;overflow:hidden;margin:8px 0}.prog div{height:100%;background:var(--green);width:0}
@@ -654,6 +655,8 @@ function renderGT(){var act=lastImp(),sc=gtScope(),by=gtLists(),ms=Object.keys(b
   var i=0;(function step(){if(run!==GT_RUN||i>=ms.length)return;var m=ms[i++],list=by[m],N=list.length,col=gtCol(searchSets(list,m),m,N);
     for(var k=1;k<=25-m;k++){var td=document.getElementById('gc-'+m+'-'+k);if(!td)continue;var c=col[k];td.dataset.done=1;td.setAttribute('style',gtColor(c.x,c.e));td.querySelector('.gx').innerHTML='atteint '+c.x+' fois / '+N}
     setTimeout(step,0)})()}
+function top10HTML(lv,k,N){var l=(lv[k]||[]).filter(function(s){return s.idx.length>0}).slice(0,10);if(!l.length)return '';
+  return '<div class="card"><h3>Top 10 des groupes</h3><p class="small mut">Les '+l.length+' groupe'+(l.length>1?'s':'')+' de '+k+' case'+(k>1?'s':'')+' le plus souvent entièrement sans mine (en vert).</p><div class="t10">'+l.map(function(s,i){return '<figure>'+selMini(s.mask)+'<figcaption><span class="rk">n° '+(i+1)+'</span><br><b>'+s.idx.length+' fois / '+N+'</b></figcaption></figure>'}).join('')+'</div><div class="honest small" style="margin-top:8px">Tous ces groupes sont proches : c\'est la variation normale du hasard, aucun ne prédit la prochaine partie.</div>'+(k>3?'<p class="small mut">Au-delà de 3 cases, recherche par faisceau ('+BEAM+' meilleurs groupes gardés) : top 10 approché.</p>':'')+'</div>'}
 function gtOpen(m,k){var list=gtLists()[m]||[],N=list.length,lv=searchSets(list,m),s=lv[k]&&lv[k][0],x=s?s.idx.length:0,p=winP(m,k),E=N*p,mu=Math.round(multi(m,k)*100)/100;
   var hit=s&&x?list.filter(function(r){return (diaMask(r.grid)&s.mask)===s.mask}).sort(function(a,b){return (b.date||0)-(a.date||0)}):[];
   var h='<h2 style="font-size:20px">'+k+' case'+(k>1?'s':'')+' · '+m+' mine'+(m>1?'s':'')+' · '+fxm(mu)+'×</h2>';
@@ -664,6 +667,7 @@ function gtOpen(m,k){var list=gtLists()[m]||[],N=list.length,lv=searchSets(list,
     '<div class="stat"><span>Chance réelle par manche</span><b>'+pct(p)+'</b></div>'+
     '<div class="honest small" style="margin-top:8px">Ce groupe a été choisi parmi '+nf(binom(25,k))+' combinaisons possibles <b>parce qu\'il</b> était le plus souvent sans mine : le chiffre « atteint » est gonflé par cette sélection. Il ne prédit rien pour la prochaine partie.</div></div>';
   if(hit.length)h+='<div class="card"><h3>Grilles où ce groupe était sans mine ('+hit.length+')</h3>'+shotsHTML(hit.slice(0,30))+(hit.length>30?'<p class="small mut">… et '+(hit.length-30)+' autres.</p>':'')+'</div>';
+  if(s&&x)h+=top10HTML(lv,k,N);
   h+='<button class="btn pri" id="closeOv" style="margin-top:14px">Fermer</button>';
   $('#overlayInner').innerHTML=h;$('#overlay').classList.add('on');$('#overlay').scrollTop=0;$('#closeOv').onclick=function(){$('#overlay').classList.remove('on')}}
 function gtTest(){$('#gtTestBox').innerHTML=testHTML(gtLists())}
